@@ -16,7 +16,9 @@ func Routes(app *fiber.App, db *gorm.DB) {
 	// healthCheckService := service.NewHealthCheckService(db)
 	// emailService := service.NewEmailService()
 	userRepo := repository.NewUserRepository(db)
+	projectRepo := repository.NewProjectRepository(db)
 	userService := service.NewUserService(userRepo, validate)
+	projectService := service.NewProjectService(projectRepo, validate)
 	// tokenService := service.NewTokenService(db, validate, userService)
 	// authService := service.NewAuthService(db, validate, userService, tokenService)
 
@@ -25,6 +27,7 @@ func Routes(app *fiber.App, db *gorm.DB) {
 	// HealthCheckRoutes(v1, healthCheckService)
 	// AuthRoutes(v1, authService, userService, tokenService, emailService)
 	UserRoutes(v1, userService)
+	ProjectRoutes(v1, projectService)
 	// TODO: add another routes here...
 
 	// Development-only routes
