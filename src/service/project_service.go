@@ -13,8 +13,9 @@ import (
 
 type ProjectService interface {
 	GetProjectList(ctx context.Context) ([]model.Project, error)
-	CreateProject(ctx context.Context, input model.ProjectCreateInput, ownderID uint) (*model.Project, error)
+	CreateProject(ctx context.Context, body model.ProjectCreate, ownderID uint) (*model.Project, error)
 	GetProjectByProjectID(ctx context.Context, projectID uint) (*model.Project, error)
+	GetProjectBySlug(ctx context.Context, slug string) (*model.Project, error)
 	GetProjectsByOwnerID(ctx context.Context, ownerID uint) ([]model.Project, error)
 }
 type projectService struct {
@@ -42,19 +43,19 @@ func (s *projectService) GetProjectList(ctx context.Context) ([]model.Project, e
 	return projects, nil
 }
 
-func (s *projectService) CreateProject(ctx context.Context, input model.ProjectCreateInput, ownerID uint) (*model.Project, error) {
-	if err := s.Validate.Struct(input); err != nil {
+func (s *projectService) CreateProject(ctx context.Context, body model.ProjectCreate, ownerID uint) (*model.Project, error) {
+	if err := s.Validate.Struct(body); err != nil {
 		s.Log.WithError(err).Error("Validation failed")
 		return nil, err
 	}
 
 	project := &model.Project{
-		OwnerID:     input.OwnerID,
-		Title:       input.Title,
-		Description: input.Description,
-		Budget:      input.Budget,
-		Currency:    input.Currency,
-		Deadline:    input.Deadline,
+		OwnerID:     body.OwnerID,
+		Title:       body.Title,
+		Description: body.Description,
+		Budget:      body.Budget,
+		Currency:    body.Currency,
+		Deadline:    body.Deadline,
 		Status:      enum.DRAFT_PROJECT, // หรือ "open" ตาม business logic
 	}
 
@@ -70,7 +71,16 @@ func (s *projectService) CreateProject(ctx context.Context, input model.ProjectC
 func (s *projectService) GetProjectByProjectID(ctx context.Context, projectID uint) (*model.Project, error) {
 	project, err := s.repo.GetProjectByProjectID(ctx, projectID)
 	if err != nil {
-		s.Log.WithError(err).Errorf("Failed to get project with projectID", projectID)
+		s.Log.WithError(err).Errorf("Failed to get project with project ID: %d", projectID)
+		return nil, err
+	}
+	return project, nil
+}
+
+func (s *projectService) GetProjectBySlug(ctx context.Context, slug string) (*model.Project, error) {
+	project, err := s.repo.GetProjectBySlug(ctx, slug)
+	if err != nil {
+		s.Log.WithError(err).Errorf("Failed to get project with project slug: %d", slug)
 		return nil, err
 	}
 	return project, nil

@@ -15,11 +15,25 @@ type SuccessWithUser struct {
 	User    []model.User `json:"user"`
 }
 
-type SuccessWithProject struct {
+type SuccessWithProjectList struct {
 	Code    int             `json:"code"`
 	Status  string          `json:"status"`
 	Message string          `json:"message"`
 	Project []model.Project `json:"project"`
+}
+
+type SuccessWithProject struct {
+	Code    int           `json:"code"`
+	Status  string        `json:"status"`
+	Message string        `json:"message"`
+	Project model.Project `json:"project"`
+}
+
+type SuccessWithCategory struct {
+	Code     int              `json:"code"`
+	Status   string           `json:"status"`
+	Message  string           `json:"message"`
+	Category []model.Category `json:"category"`
 }
 
 type SuccessWithTokens struct {

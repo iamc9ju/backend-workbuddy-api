@@ -37,7 +37,7 @@ func (ctl *ProjectController) GetProjectList(c *fiber.Ctx) error {
 		})
 	}
 
-	return c.Status(fiber.StatusOK).JSON(response.SuccessWithProject{
+	return c.Status(fiber.StatusOK).JSON(response.SuccessWithProjectList{
 		Code:    fiber.StatusOK,
 		Status:  "success",
 		Message: "Get all projects successfully",
@@ -46,8 +46,8 @@ func (ctl *ProjectController) GetProjectList(c *fiber.Ctx) error {
 }
 
 func (ctl *ProjectController) CreateProject(c *fiber.Ctx) error {
-	var input model.ProjectCreateInput
-	if err := c.BodyParser(&input); err != nil {
+	var body model.ProjectCreate
+	if err := c.BodyParser(&body); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(response.ErrorDetails{
 			Code:    fiber.StatusBadRequest,
 			Status:  "error",
@@ -57,7 +57,7 @@ func (ctl *ProjectController) CreateProject(c *fiber.Ctx) error {
 
 	// Get owner ID
 	//  ownerID := getUserIDFromContext(c)
-	project, err := ctl.project_service.CreateProject(c.Context(), input, input.OwnerID)
+	project, err := ctl.project_service.CreateProject(c.Context(), body, body.OwnerID)
 	if err != nil {
 		if errors.Is(err, validator.ValidationErrors{}) {
 			return c.Status(fiber.StatusBadRequest).JSON(response.ErrorDetails{
@@ -77,7 +77,7 @@ func (ctl *ProjectController) CreateProject(c *fiber.Ctx) error {
 		Code:    fiber.StatusCreated,
 		Status:  "success",
 		Message: "Project created successfully",
-		Project: []model.Project{*project},
+		Project: *project,
 	})
 }
 
@@ -117,7 +117,39 @@ func (ctl *ProjectController) GetProjectByProjectID(c *fiber.Ctx) error {
 		Code:    fiber.StatusOK,
 		Status:  "success",
 		Message: "Project retrieved successfully",
-		Project: []model.Project{*project},
+		Project: *project,
+	})
+}
+
+func (ctl *ProjectController) GetProjectBySlug(c *fiber.Ctx) error {
+	ctx, cancel := context.WithTimeout(c.Context(), 5*time.Second)
+	defer cancel()
+
+	// ดึง slug จาก URL parameter
+	slug := c.Params("slug")
+	project, err := ctl.project_service.GetProjectBySlug(ctx, slug)
+	if err != nil {
+		if strings.Contains(err.Error(), "not found") {
+			return c.Status(fiber.StatusNotFound).JSON(response.ErrorDetails{
+				Code:    fiber.StatusNotFound,
+				Status:  "error",
+				Message: "Project not found",
+				Errors:  err,
+			})
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON(response.ErrorDetails{
+			Code:    fiber.StatusInternalServerError,
+			Status:  "error",
+			Message: "Failed to get project",
+			Errors:  err,
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(response.SuccessWithProject{
+		Code:    fiber.StatusOK,
+		Status:  "success",
+		Message: "Project retrieved successfully",
+		Project: *project,
 	})
 }
 
@@ -144,7 +176,7 @@ func (c *ProjectController) GetProjectsByOwnerID(ctx *fiber.Ctx) error {
 	}
 
 	// return ctx.JSON(projects)
-	return ctx.Status(fiber.StatusOK).JSON(response.SuccessWithProject{
+	return ctx.Status(fiber.StatusOK).JSON(response.SuccessWithProjectList{
 		Code:    fiber.StatusOK,
 		Status:  "success",
 		Message: "Project retrieved successfully",

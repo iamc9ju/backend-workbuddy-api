@@ -13,7 +13,7 @@ func ProjectRoutes(v1 fiber.Router, p service.ProjectService) {
 	project := v1.Group("/project")
 
 	project.Get("list", projectController.GetProjectList)
-	project.Get(":id", projectController.GetProjectByProjectID)
+	project.Get(":slug", projectController.GetProjectBySlug)
 	project.Post("", projectController.CreateProject)
 	project.Get("owner/:id", projectController.GetProjectsByOwnerID)
 

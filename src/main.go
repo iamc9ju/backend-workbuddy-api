@@ -58,6 +58,25 @@ func setupFiberApp() *fiber.App {
 	app.Use(cors.New())                 //Cross-Origin Resource Sharing
 	app.Use(middleware.RecoverConfig()) //Recover จาก Panic keep server running
 
+	// db := database.Connect(config.DBHost, config.DBName)
+
+	// sqlDB, err := db.DB()
+	// if err != nil {
+	// 	panic("Failed to get DB instance: " + err.Error())
+	// }
+	// if err := sqlDB.Ping(); err != nil {
+	// 	panic("Database connection failed: " + err.Error())
+	// }
+	// err = db.AutoMigrate(
+	// 	&model.Project{},
+	// // &model.Category{},
+	// // &model.CheatSheet{},
+	// )
+	// if err != nil {
+	// 	log.Fatalf("AutoMigrate failed: %v", err)
+	// }
+	// log.Println("Database migration completed successfully.")
+
 	return app
 }
 

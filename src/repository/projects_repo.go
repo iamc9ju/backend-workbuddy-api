@@ -13,6 +13,7 @@ type ProjectRepository interface {
 	GetProjectList(ctx context.Context) ([]model.Project, error)
 	CreateProject(ctx context.Context, project *model.Project) error
 	GetProjectByProjectID(ctx context.Context, projectID uint) (*model.Project, error)
+	GetProjectBySlug(ctx context.Context, slug string) (*model.Project, error)
 	GetProjectsByOwnerID(ctx context.Context, ownerID uint) ([]model.Project, error)
 }
 
@@ -44,6 +45,22 @@ func (r *projectRepository) GetProjectByProjectID(ctx context.Context, projectID
 	var project model.Project
 	err := r.db.WithContext(ctx).
 		Where("project_id = ?", projectID).
+		First(&project).
+		Error
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, fmt.Errorf("project not found or you don't have permission")
+		}
+		return nil, err
+	}
+	return &project, nil
+}
+
+func (r *projectRepository) GetProjectBySlug(ctx context.Context, slug string) (*model.Project, error) {
+	var project model.Project
+	err := r.db.WithContext(ctx).
+		Where("slug = ?", slug).
 		First(&project).
 		Error
 
