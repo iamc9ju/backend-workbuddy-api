@@ -1,6 +1,7 @@
 package service
 
 import (
+	"app/src/enum"
 	"app/src/model"
 	"app/src/repository"
 	"app/src/utils"
@@ -54,7 +55,7 @@ func (s *projectService) CreateProject(ctx context.Context, input model.ProjectC
 		Budget:      input.Budget,
 		Currency:    input.Currency,
 		Deadline:    input.Deadline,
-		Status:      "draft", // หรือ "open" ตาม business logic
+		Status:      enum.DRAFT_PROJECT, // หรือ "open" ตาม business logic
 	}
 
 	if err := s.repo.CreateProject(ctx, project); err != nil {

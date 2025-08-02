@@ -12,9 +12,9 @@ func ProjectRoutes(v1 fiber.Router, p service.ProjectService) {
 
 	project := v1.Group("/project")
 
-	project.Get("/getProjectList", projectController.GetProjectList)
-	project.Get("/getProjectByProjectId/:id", projectController.GetProjectByProjectID)
-	project.Post("/createProject", projectController.CreateProject)
-	project.Get("/getProjectByOwnerId/:id", projectController.GetProjectsByOwnerID)
+	project.Get("list", projectController.GetProjectList)
+	project.Get(":id", projectController.GetProjectByProjectID)
+	project.Post("", projectController.CreateProject)
+	project.Get("owner/:id", projectController.GetProjectsByOwnerID)
 
 }
