@@ -1,9 +1,9 @@
 package enum
 
 const (
-	DRAFT_PROJECT       = "DRAFT"
-	OPEN_PROJECT        = "OPEN"
-	IN_PROGRESS_PROJECT = "IN_PROGRESS"
-	COMPLETED_PROJECT   = "COMPLETED"
-	CANCELLED_PROJECT   = "CANCELLED"
+	DRAFT_PROJECT       = "draft"
+	OPEN_PROJECT        = "open"
+	IN_PROGRESS_PROJECT = "in_progress"
+	COMPLETED_PROJECT   = "completed"
+	CANCELLED_PROJECT   = "cancelled"
 )
