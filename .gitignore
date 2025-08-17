@@ -1,9 +1,53 @@
-# Environment varibales
-.env*
-!.env*.example
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
 
-# Temporary
-tmp/
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.cov
 
-lint.txt
-main
+# Dependency directories (remove the comment below if you use Go modules)
+/vendor/
+
+# Go workspace file
+*.code-workspace
+
+# Go build cache
+**/tmp/
+
+# IDE/editor directories and files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+.env.*
+
+# Logs
+*.log
+
+# Test output
+*.coverprofile
+*.testresult
+
+# Docker
+*.pid
+
+# Ignore compiled test binaries
+*.test
+
+# Ignore coverage files
+coverage.out
+
+# Ignore local config
+.air.toml
