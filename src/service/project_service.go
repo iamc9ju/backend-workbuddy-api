@@ -53,7 +53,8 @@ func (s *projectService) CreateProject(ctx context.Context, body model.ProjectCr
 		OwnerID:     body.OwnerID,
 		Title:       body.Title,
 		Description: body.Description,
-		Budget:      body.Budget,
+		BudgetMin:   body.BudgetMin,
+		BudgetMax:   body.BudgetMax,
 		Currency:    body.Currency,
 		Deadline:    body.Deadline,
 		Status:      enum.DRAFT_PROJECT, // หรือ "open" ตาม business logic

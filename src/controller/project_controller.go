@@ -137,12 +137,14 @@ func (ctl *ProjectController) GetProjectBySlug(c *fiber.Ctx) error {
 				Errors:  err,
 			})
 		}
+
 		return c.Status(fiber.StatusInternalServerError).JSON(response.ErrorDetails{
 			Code:    fiber.StatusInternalServerError,
 			Status:  "error",
 			Message: "Failed to get project",
 			Errors:  err,
 		})
+
 	}
 
 	return c.Status(fiber.StatusOK).JSON(response.SuccessWithProject{

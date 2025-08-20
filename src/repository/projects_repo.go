@@ -26,15 +26,29 @@ func NewProjectRepository(db *gorm.DB) ProjectRepository {
 }
 
 func (r *projectRepository) GetProjectList(ctx context.Context) ([]model.Project, error) {
-	var projects []model.Project
+	var projects []model.ProjectWithColor
 
-	err := r.db.WithContext(ctx).Find(&projects).Error
+	err := r.db.WithContext(ctx).
+		Table("projects").
+		Select("projects.*, colors.color_name, colors.color_code").
+		Joins("LEFT JOIN colors ON colors.color_id = projects.background_color_id").
+		Scan(&projects).Error
 
 	if err != nil {
 		return nil, err
 	}
 
-	return projects, nil
+	var result []model.Project
+	for _, p := range projects {
+		project := p.Project
+		project.Color = model.Color{
+			ColorID:   p.BackgroundColorId,
+			ColorName: p.ColorName,
+			ColorCode: p.ColorCode,
+		}
+		result = append(result, project)
+	}
+	return result, nil
 }
 
 func (r *projectRepository) CreateProject(ctx context.Context, project *model.Project) error {
