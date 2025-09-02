@@ -17,6 +17,8 @@ type Project struct {
 	Deadline          time.Time `gorm:"column:deadline" json:"deadline"`
 	Status            string    `gorm:"column:status;size:20;default:'DRAFT'" json:"status"`
 	BackgroundColorId int       `gorm:"column:background_color_id" json:"background_color_id"`
+	LanguageId        int       `gorm:"column:language_id" json:"language_id"`
+	FrameWorkId       int       `gorm:"column:framework_id" json:"frameword_id"`
 	Color             Color     `gorm:"foreignKey:BackgroundColorId;references:ColorID" json:"color"`
 	CreatedAt         time.Time `gorm:"column:created_at;autoCreateTime" json:"created_at"`
 	UpdatedAt         time.Time `gorm:"column:updated_at;autoUpdateTime" json:"updated_at"`

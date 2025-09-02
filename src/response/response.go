@@ -44,6 +44,13 @@ type SuccessWithTokens struct {
 	Tokens  Tokens     `json:"tokens"`
 }
 
+type SuccessWithLanguageList struct {
+	Code      int                         `json:"code"`
+	Status    string                      `json:"status"`
+	Message   string                      `json:"message"`
+	Languages []model.ProgrammingLanguage `json:"languages"`
+}
+
 type SuccessWithPaginate[T any] struct {
 	Code         int    `json:"code"`
 	Status       string `json:"status"`

@@ -30,8 +30,9 @@ func (r *projectRepository) GetProjectList(ctx context.Context) ([]model.Project
 
 	err := r.db.WithContext(ctx).
 		Table("projects").
-		Select("projects.*, colors.color_name, colors.color_code").
+		Select("projects.*, colors.color_name, colors.color_code,pts.language_id,pts.framework_id").
 		Joins("LEFT JOIN colors ON colors.color_id = projects.background_color_id").
+		Joins("LEFT JOIN project_tech_stack as pts on pts.project_id =projects.project_id").
 		Scan(&projects).Error
 
 	if err != nil {
@@ -41,6 +42,8 @@ func (r *projectRepository) GetProjectList(ctx context.Context) ([]model.Project
 	var result []model.Project
 	for _, p := range projects {
 		project := p.Project
+		project.LanguageId = p.LanguageId
+		project.FrameWorkId = p.FrameWorkId
 		project.Color = model.Color{
 			ColorID:   p.BackgroundColorId,
 			ColorName: p.ColorName,

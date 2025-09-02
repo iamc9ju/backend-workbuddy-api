@@ -33,13 +33,13 @@ func NewProjectService(repo repository.ProjectRepository, validate *validator.Va
 }
 
 func (s *projectService) GetProjectList(ctx context.Context) ([]model.Project, error) {
-	s.Log.Info("Getting project list")
+	s.Log.Info("Retrieving project list")
 	projects, err := s.repo.GetProjectList(ctx)
 	if err != nil {
-		s.Log.WithError(err).Error("Failed to get projects")
+		s.Log.WithError(err).Error("Failed to retrieve project list")
 		return nil, err
 	}
-	s.Log.Infof("Got %d projects", len(projects))
+	s.Log.Infof("Successfully retrieved %d projects", len(projects))
 	return projects, nil
 }
 

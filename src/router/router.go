@@ -7,10 +7,15 @@ import (
 	"app/src/validation"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"gorm.io/gorm"
 )
 
 func Routes(app *fiber.App, db *gorm.DB) {
+	app.Use(cors.New(cors.Config{
+		AllowOrigins: "http://localhost:3000",
+		AllowHeaders: "Origin, Content-Type, Accept, Authorization",
+	}))
 	validate := validation.Validator()
 
 	// healthCheckService := service.NewHealthCheckService(db)
@@ -18,11 +23,13 @@ func Routes(app *fiber.App, db *gorm.DB) {
 	userRepo := repository.NewUserRepository(db)
 	projectRepo := repository.NewProjectRepository(db)
 	categoryRepo := repository.NewCategoryRepository(db)
+	languagesRepo := repository.NewProgrammingLanguageRepository(db)
 	userService := service.NewUserService(userRepo, validate)
 	projectService := service.NewProjectService(projectRepo, validate)
 	categoryService := service.NewCategoryService(categoryRepo, validate)
 	// tokenService := service.NewTokenService(db, validate, userService)
 	// authService := service.NewAuthService(db, validate, userService, tokenService)
+	languageService := service.NewLanguageService(languagesRepo, validate)
 
 	v1 := app.Group("/v1")
 
@@ -31,6 +38,7 @@ func Routes(app *fiber.App, db *gorm.DB) {
 	UserRoutes(v1, userService)
 	ProjectRoutes(v1, projectService)
 	CategoryRoutes(v1, categoryService)
+	LanguageRoutes(v1, languageService)
 	// TODO: add another routes here...
 
 	// Development-only routes
