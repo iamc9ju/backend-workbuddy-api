@@ -7,7 +7,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func ProjectRoutes(v1 fiber.Router, p service.ProjectService) {
+func JobRoutes(v1 fiber.Router, p service.JobService) {
 	projectController := controller.NewProjectController(p)
 
 	project := v1.Group("/project")

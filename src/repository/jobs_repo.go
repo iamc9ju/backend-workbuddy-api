@@ -9,7 +9,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type ProjectRepository interface {
+type JobRepository interface {
 	GetProjectList(ctx context.Context) ([]model.Project, error)
 	CreateProject(ctx context.Context, project *model.Project) error
 	GetProjectByProjectID(ctx context.Context, projectID uint) (*model.Project, error)
@@ -17,15 +17,15 @@ type ProjectRepository interface {
 	GetProjectsByOwnerID(ctx context.Context, ownerID uint) ([]model.Project, error)
 }
 
-type projectRepository struct {
+type jobRepository struct {
 	db *gorm.DB
 }
 
-func NewProjectRepository(db *gorm.DB) ProjectRepository {
-	return &projectRepository{db: db}
+func NewJobRepository(db *gorm.DB) JobRepository {
+	return &jobRepository{db: db}
 }
 
-func (r *projectRepository) GetProjectList(ctx context.Context) ([]model.Project, error) {
+func (r *jobRepository) GetProjectList(ctx context.Context) ([]model.Project, error) {
 	var projects []model.ProjectWithColor
 
 	err := r.db.WithContext(ctx).
@@ -54,11 +54,11 @@ func (r *projectRepository) GetProjectList(ctx context.Context) ([]model.Project
 	return result, nil
 }
 
-func (r *projectRepository) CreateProject(ctx context.Context, project *model.Project) error {
+func (r *jobRepository) CreateProject(ctx context.Context, project *model.Project) error {
 	return r.db.WithContext(ctx).Create(project).Error
 }
 
-func (r *projectRepository) GetProjectByProjectID(ctx context.Context, projectID uint) (*model.Project, error) {
+func (r *jobRepository) GetProjectByProjectID(ctx context.Context, projectID uint) (*model.Project, error) {
 	var project model.Project
 	err := r.db.WithContext(ctx).
 		Where("project_id = ?", projectID).
@@ -74,7 +74,7 @@ func (r *projectRepository) GetProjectByProjectID(ctx context.Context, projectID
 	return &project, nil
 }
 
-func (r *projectRepository) GetProjectBySlug(ctx context.Context, slug string) (*model.Project, error) {
+func (r *jobRepository) GetProjectBySlug(ctx context.Context, slug string) (*model.Project, error) {
 	var project model.Project
 	err := r.db.WithContext(ctx).
 		Where("slug = ?", slug).
@@ -90,7 +90,7 @@ func (r *projectRepository) GetProjectBySlug(ctx context.Context, slug string) (
 	return &project, nil
 }
 
-func (r *projectRepository) GetProjectsByOwnerID(ctx context.Context, ownerID uint) ([]model.Project, error) {
+func (r *jobRepository) GetProjectsByOwnerID(ctx context.Context, ownerID uint) ([]model.Project, error) {
 	var projects []model.Project
 	err := r.db.WithContext(ctx).
 		Where("owner_id = ?", ownerID).

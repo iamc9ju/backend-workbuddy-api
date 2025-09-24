@@ -15,10 +15,10 @@ import (
 )
 
 type ProjectController struct {
-	project_service service.ProjectService
+	project_service service.JobService
 }
 
-func NewProjectController(project_service service.ProjectService) *ProjectController {
+func NewProjectController(project_service service.JobService) *ProjectController {
 	return &ProjectController{project_service: project_service}
 }
 

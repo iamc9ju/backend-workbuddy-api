@@ -11,28 +11,28 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type ProjectService interface {
+type JobService interface {
 	GetProjectList(ctx context.Context) ([]model.Project, error)
 	CreateProject(ctx context.Context, body model.ProjectCreate, ownderID uint) (*model.Project, error)
 	GetProjectByProjectID(ctx context.Context, projectID uint) (*model.Project, error)
 	GetProjectBySlug(ctx context.Context, slug string) (*model.Project, error)
 	GetProjectsByOwnerID(ctx context.Context, ownerID uint) ([]model.Project, error)
 }
-type projectService struct {
-	repo     repository.ProjectRepository
+type jobService struct {
+	repo     repository.JobRepository
 	Log      *logrus.Logger
 	Validate *validator.Validate
 }
 
-func NewProjectService(repo repository.ProjectRepository, validate *validator.Validate) ProjectService {
-	return &projectService{
+func NewJobService(repo repository.JobRepository, validate *validator.Validate) JobService {
+	return &jobService{
 		repo:     repo,
 		Log:      utils.Log,
 		Validate: validate,
 	}
 }
 
-func (s *projectService) GetProjectList(ctx context.Context) ([]model.Project, error) {
+func (s *jobService) GetProjectList(ctx context.Context) ([]model.Project, error) {
 	s.Log.Info("Retrieving project list")
 	projects, err := s.repo.GetProjectList(ctx)
 	if err != nil {
@@ -43,7 +43,7 @@ func (s *projectService) GetProjectList(ctx context.Context) ([]model.Project, e
 	return projects, nil
 }
 
-func (s *projectService) CreateProject(ctx context.Context, body model.ProjectCreate, ownerID uint) (*model.Project, error) {
+func (s *jobService) CreateProject(ctx context.Context, body model.ProjectCreate, ownerID uint) (*model.Project, error) {
 	if err := s.Validate.Struct(body); err != nil {
 		s.Log.WithError(err).Error("Validation failed")
 		return nil, err
@@ -69,7 +69,7 @@ func (s *projectService) CreateProject(ctx context.Context, body model.ProjectCr
 
 }
 
-func (s *projectService) GetProjectByProjectID(ctx context.Context, projectID uint) (*model.Project, error) {
+func (s *jobService) GetProjectByProjectID(ctx context.Context, projectID uint) (*model.Project, error) {
 	project, err := s.repo.GetProjectByProjectID(ctx, projectID)
 	if err != nil {
 		s.Log.WithError(err).Errorf("Failed to get project with project ID: %d", projectID)
@@ -78,7 +78,7 @@ func (s *projectService) GetProjectByProjectID(ctx context.Context, projectID ui
 	return project, nil
 }
 
-func (s *projectService) GetProjectBySlug(ctx context.Context, slug string) (*model.Project, error) {
+func (s *jobService) GetProjectBySlug(ctx context.Context, slug string) (*model.Project, error) {
 	project, err := s.repo.GetProjectBySlug(ctx, slug)
 	if err != nil {
 		s.Log.WithError(err).Errorf("Failed to get project with project slug: %d", slug)
@@ -87,7 +87,7 @@ func (s *projectService) GetProjectBySlug(ctx context.Context, slug string) (*mo
 	return project, nil
 }
 
-func (s *projectService) GetProjectsByOwnerID(ctx context.Context, ownerID uint) ([]model.Project, error) {
+func (s *jobService) GetProjectsByOwnerID(ctx context.Context, ownerID uint) ([]model.Project, error) {
 	projects, err := s.repo.GetProjectsByOwnerID(ctx, ownerID)
 	if err != nil {
 		s.Log.WithError(err).Errorf("Failed to get projects for owner ID: %d", ownerID)
