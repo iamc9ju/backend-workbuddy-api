@@ -4,8 +4,8 @@ import (
 	"time"
 )
 
-type Project struct {
-	ProjectID         uint      `gorm:"column:project_id;primaryKey" json:"project_id"`
+type Job struct {
+	JobID             uint      `gorm:"column:job_id;primaryKey" json:"job_id"`
 	OwnerID           uint      `gorm:"column:owner_id;not null" json:"owner_id"`
 	CategoryId        uint      `gorm:"column:category_id;not null" json:"category_id"`
 	Title             string    `gorm:"column:title;size:255;not null" json:"title"`
@@ -23,12 +23,12 @@ type Project struct {
 	CreatedAt         time.Time `gorm:"column:created_at;autoCreateTime" json:"created_at"`
 	UpdatedAt         time.Time `gorm:"column:updated_at;autoUpdateTime" json:"updated_at"`
 }
-type ProjectWithColor struct {
-	Project
+type JobWithColor struct {
+	Job
 	ColorName string `gorm:"column:color_name" json:"color_name"`
 	ColorCode string `gorm:"column:color_code" json:"color_code"`
 }
-type ProjectCreate struct {
+type JobCreate struct {
 	OwnerID     uint      `json:"owner_id" validate:"required,numeric"`
 	Title       string    `json:"title" validate:"required,max=255"`
 	Description string    `json:"description" validate:"max=2000"`
@@ -45,5 +45,5 @@ type Color struct {
 	ColorCode string `gorm:"column:color_code" json:"color_code"`
 }
 
-type ProjectFilter struct {
+type JobFilter struct {
 }

@@ -18,35 +18,35 @@ type ProjectController struct {
 	project_service service.JobService
 }
 
-func NewProjectController(project_service service.JobService) *ProjectController {
+func NewJobController(project_service service.JobService) *ProjectController {
 	return &ProjectController{project_service: project_service}
 }
 
-func (ctl *ProjectController) GetProjectList(c *fiber.Ctx) error {
+func (ctl *ProjectController) GetJobList(c *fiber.Ctx) error {
 	ctx, cancle := context.WithTimeout(c.Context(), 10*time.Second)
 	defer cancle()
-	projects, err := ctl.project_service.GetProjectList(ctx)
+	jobs, err := ctl.project_service.GetJobList(ctx)
 
 	if err != nil {
 		utils.Log.Error(err)
 		return c.Status(fiber.StatusInternalServerError).JSON(response.ErrorDetails{
 			Code:    fiber.StatusInternalServerError,
 			Status:  "error",
-			Message: "Failed to get projects",
+			Message: "Failed to get jobs",
 			Errors:  err,
 		})
 	}
 
-	return c.Status(fiber.StatusOK).JSON(response.SuccessWithProjectList{
+	return c.Status(fiber.StatusOK).JSON(response.SuccessWithJobList{
 		Code:    fiber.StatusOK,
 		Status:  "success",
-		Message: "Get all projects successfully",
-		Project: projects,
+		Message: "Get all jobs successfully",
+		Job:     jobs,
 	})
 }
 
-func (ctl *ProjectController) CreateProject(c *fiber.Ctx) error {
-	var body model.ProjectCreate
+func (ctl *ProjectController) CreateJob(c *fiber.Ctx) error {
+	var body model.JobCreate
 	if err := c.BodyParser(&body); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(response.ErrorDetails{
 			Code:    fiber.StatusBadRequest,
@@ -57,7 +57,7 @@ func (ctl *ProjectController) CreateProject(c *fiber.Ctx) error {
 
 	// Get owner ID
 	//  ownerID := getUserIDFromContext(c)
-	project, err := ctl.project_service.CreateProject(c.Context(), body, body.OwnerID)
+	job, err := ctl.project_service.CreateJob(c.Context(), body, body.OwnerID)
 	if err != nil {
 		if errors.Is(err, validator.ValidationErrors{}) {
 			return c.Status(fiber.StatusBadRequest).JSON(response.ErrorDetails{
@@ -73,15 +73,15 @@ func (ctl *ProjectController) CreateProject(c *fiber.Ctx) error {
 			Message: "Failed to create project",
 		})
 	}
-	return c.Status(fiber.StatusCreated).JSON(response.SuccessWithProject{
+	return c.Status(fiber.StatusCreated).JSON(response.SuccessWithJob{
 		Code:    fiber.StatusCreated,
 		Status:  "success",
-		Message: "Project created successfully",
-		Project: *project,
+		Message: "Job created successfully",
+		Job:     *job,
 	})
 }
 
-func (ctl *ProjectController) GetProjectByProjectID(c *fiber.Ctx) error {
+func (ctl *ProjectController) GetJobByJobID(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(c.Context(), 5*time.Second)
 	defer cancel()
 
@@ -91,49 +91,49 @@ func (ctl *ProjectController) GetProjectByProjectID(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(response.Common{
 			Code:    fiber.StatusBadRequest,
 			Status:  "error",
-			Message: "Invalid project ID",
+			Message: "Invalid job ID",
 		})
 	}
 
-	project, err := ctl.project_service.GetProjectByProjectID(ctx, uint(id))
+	job, err := ctl.project_service.GetJobByJobID(ctx, uint(id))
 	if err != nil {
 		if strings.Contains(err.Error(), "not found") {
 			return c.Status(fiber.StatusNotFound).JSON(response.ErrorDetails{
 				Code:    fiber.StatusNotFound,
 				Status:  "error",
-				Message: "Project not found",
+				Message: "Job not found",
 				Errors:  err,
 			})
 		}
 		return c.Status(fiber.StatusInternalServerError).JSON(response.ErrorDetails{
 			Code:    fiber.StatusInternalServerError,
 			Status:  "error",
-			Message: "Failed to get project",
+			Message: "Failed to get job",
 			Errors:  err,
 		})
 	}
 
-	return c.Status(fiber.StatusOK).JSON(response.SuccessWithProject{
+	return c.Status(fiber.StatusOK).JSON(response.SuccessWithJob{
 		Code:    fiber.StatusOK,
 		Status:  "success",
-		Message: "Project retrieved successfully",
-		Project: *project,
+		Message: "Job retrieved successfully",
+		Job:     *job,
 	})
 }
 
-func (ctl *ProjectController) GetProjectBySlug(c *fiber.Ctx) error {
+func (ctl *ProjectController) GetJobBySlug(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(c.Context(), 5*time.Second)
 	defer cancel()
 
 	// ดึง slug จาก URL parameter
 	slug := c.Params("slug")
-	project, err := ctl.project_service.GetProjectBySlug(ctx, slug)
+	job, err := ctl.project_service.GetJobBySlug(ctx, slug)
 	if err != nil {
 		if strings.Contains(err.Error(), "not found") {
 			return c.Status(fiber.StatusNotFound).JSON(response.ErrorDetails{
 				Code:    fiber.StatusNotFound,
 				Status:  "error",
-				Message: "Project not found",
+				Message: "Job not found",
 				Errors:  err,
 			})
 		}
@@ -141,47 +141,47 @@ func (ctl *ProjectController) GetProjectBySlug(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(response.ErrorDetails{
 			Code:    fiber.StatusInternalServerError,
 			Status:  "error",
-			Message: "Failed to get project",
+			Message: "Failed to get job",
 			Errors:  err,
 		})
 
 	}
 
-	return c.Status(fiber.StatusOK).JSON(response.SuccessWithProject{
+	return c.Status(fiber.StatusOK).JSON(response.SuccessWithJob{
 		Code:    fiber.StatusOK,
 		Status:  "success",
-		Message: "Project retrieved successfully",
-		Project: *project,
+		Message: "Job retrieved successfully",
+		Job:     *job,
 	})
 }
 
-func (c *ProjectController) GetProjectsByOwnerID(ctx *fiber.Ctx) error {
+func (c *ProjectController) GetJobByOwnerID(ctx *fiber.Ctx) error {
 	// ownerID := getUserIDFromContext(ctx) // ดึงจาก JWT หรือ session
 	id, err := ctx.ParamsInt("id")
 
-	projects, err := c.project_service.GetProjectsByOwnerID(ctx.Context(), uint(id))
+	jobs, err := c.project_service.GetJobByOwnerID(ctx.Context(), uint(id))
 	if err != nil {
-		if strings.Contains(err.Error(), "no projects found") {
+		if strings.Contains(err.Error(), "no jobs found") {
 			return ctx.Status(fiber.StatusOK).JSON(response.ErrorDetails{
 				Code:    fiber.StatusNotFound,
 				Status:  "error",
-				Message: "Project not found",
+				Message: "Job not found",
 				Errors:  err,
 			})
 		}
 		return ctx.Status(fiber.StatusInternalServerError).JSON(response.ErrorDetails{
 			Code:    fiber.StatusInternalServerError,
 			Status:  "error",
-			Message: "Failed to get project",
+			Message: "Failed to get job",
 			Errors:  err,
 		})
 	}
 
 	// return ctx.JSON(projects)
-	return ctx.Status(fiber.StatusOK).JSON(response.SuccessWithProjectList{
+	return ctx.Status(fiber.StatusOK).JSON(response.SuccessWithJobList{
 		Code:    fiber.StatusOK,
 		Status:  "success",
-		Message: "Project retrieved successfully",
-		Project: projects,
+		Message: "Job retrieved successfully",
+		Job:     jobs,
 	})
 }

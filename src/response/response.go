@@ -15,18 +15,18 @@ type SuccessWithUser struct {
 	User    []model.User `json:"user"`
 }
 
-type SuccessWithProjectList struct {
-	Code    int             `json:"code"`
-	Status  string          `json:"status"`
-	Message string          `json:"message"`
-	Project []model.Project `json:"project"`
+type SuccessWithJobList struct {
+	Code    int         `json:"code"`
+	Status  string      `json:"status"`
+	Message string      `json:"message"`
+	Job     []model.Job `json:"job"`
 }
 
-type SuccessWithProject struct {
-	Code    int           `json:"code"`
-	Status  string        `json:"status"`
-	Message string        `json:"message"`
-	Project model.Project `json:"project"`
+type SuccessWithJob struct {
+	Code    int       `json:"code"`
+	Status  string    `json:"status"`
+	Message string    `json:"message"`
+	Job     model.Job `json:"job"`
 }
 
 type SuccessWithCategory struct {

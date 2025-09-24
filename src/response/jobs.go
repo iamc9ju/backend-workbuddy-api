@@ -1,4 +1,4 @@
 package response
 
-type GetProjectList struct {
+type GetJobList struct {
 }

@@ -10,11 +10,11 @@ import (
 )
 
 type JobRepository interface {
-	GetProjectList(ctx context.Context) ([]model.Project, error)
-	CreateProject(ctx context.Context, project *model.Project) error
-	GetProjectByProjectID(ctx context.Context, projectID uint) (*model.Project, error)
-	GetProjectBySlug(ctx context.Context, slug string) (*model.Project, error)
-	GetProjectsByOwnerID(ctx context.Context, ownerID uint) ([]model.Project, error)
+	GetJobList(ctx context.Context) ([]model.Job, error)
+	CreateJob(ctx context.Context, job *model.Job) error
+	GetJobByJobID(ctx context.Context, jobID uint) (*model.Job, error)
+	GetJobBySlug(ctx context.Context, slug string) (*model.Job, error)
+	GetJobByOwnerID(ctx context.Context, ownerID uint) ([]model.Job, error)
 }
 
 type jobRepository struct {
@@ -25,43 +25,43 @@ func NewJobRepository(db *gorm.DB) JobRepository {
 	return &jobRepository{db: db}
 }
 
-func (r *jobRepository) GetProjectList(ctx context.Context) ([]model.Project, error) {
-	var projects []model.ProjectWithColor
+func (r *jobRepository) GetJobList(ctx context.Context) ([]model.Job, error) {
+	var jobs []model.JobWithColor
 
 	err := r.db.WithContext(ctx).
-		Table("projects").
-		Select("projects.*, colors.color_name, colors.color_code,pts.language_id,pts.framework_id").
-		Joins("LEFT JOIN colors ON colors.color_id = projects.background_color_id").
-		Joins("LEFT JOIN project_tech_stack as pts on pts.project_id =projects.project_id").
-		Scan(&projects).Error
+		Table("jobs").
+		Select("jobs.*, colors.color_name, colors.color_code,pts.language_id,pts.framework_id").
+		Joins("LEFT JOIN colors ON colors.color_id = jobs.background_color_id").
+		Joins("LEFT JOIN project_tech_stack as pts on pts.project_id =jobs.job_id").
+		Scan(&jobs).Error
 
 	if err != nil {
 		return nil, err
 	}
 
-	var result []model.Project
-	for _, p := range projects {
-		project := p.Project
-		project.LanguageId = p.LanguageId
-		project.FrameWorkId = p.FrameWorkId
-		project.Color = model.Color{
+	var result []model.Job
+	for _, p := range jobs {
+		job := p.Job
+		job.LanguageId = p.LanguageId
+		job.FrameWorkId = p.FrameWorkId
+		job.Color = model.Color{
 			ColorID:   p.BackgroundColorId,
 			ColorName: p.ColorName,
 			ColorCode: p.ColorCode,
 		}
-		result = append(result, project)
+		result = append(result, job)
 	}
 	return result, nil
 }
 
-func (r *jobRepository) CreateProject(ctx context.Context, project *model.Project) error {
-	return r.db.WithContext(ctx).Create(project).Error
+func (r *jobRepository) CreateJob(ctx context.Context, job *model.Job) error {
+	return r.db.WithContext(ctx).Create(job).Error
 }
 
-func (r *jobRepository) GetProjectByProjectID(ctx context.Context, projectID uint) (*model.Project, error) {
-	var project model.Project
+func (r *jobRepository) GetJobByJobID(ctx context.Context, jobID uint) (*model.Job, error) {
+	var project model.Job
 	err := r.db.WithContext(ctx).
-		Where("project_id = ?", projectID).
+		Where("job_id = ?", jobID).
 		First(&project).
 		Error
 
@@ -74,8 +74,8 @@ func (r *jobRepository) GetProjectByProjectID(ctx context.Context, projectID uin
 	return &project, nil
 }
 
-func (r *jobRepository) GetProjectBySlug(ctx context.Context, slug string) (*model.Project, error) {
-	var project model.Project
+func (r *jobRepository) GetJobBySlug(ctx context.Context, slug string) (*model.Job, error) {
+	var project model.Job
 	err := r.db.WithContext(ctx).
 		Where("slug = ?", slug).
 		First(&project).
@@ -90,8 +90,8 @@ func (r *jobRepository) GetProjectBySlug(ctx context.Context, slug string) (*mod
 	return &project, nil
 }
 
-func (r *jobRepository) GetProjectsByOwnerID(ctx context.Context, ownerID uint) ([]model.Project, error) {
-	var projects []model.Project
+func (r *jobRepository) GetJobByOwnerID(ctx context.Context, ownerID uint) ([]model.Job, error) {
+	var projects []model.Job
 	err := r.db.WithContext(ctx).
 		Where("owner_id = ?", ownerID).
 		Find(&projects).

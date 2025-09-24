@@ -12,11 +12,11 @@ import (
 )
 
 type JobService interface {
-	GetProjectList(ctx context.Context) ([]model.Project, error)
-	CreateProject(ctx context.Context, body model.ProjectCreate, ownderID uint) (*model.Project, error)
-	GetProjectByProjectID(ctx context.Context, projectID uint) (*model.Project, error)
-	GetProjectBySlug(ctx context.Context, slug string) (*model.Project, error)
-	GetProjectsByOwnerID(ctx context.Context, ownerID uint) ([]model.Project, error)
+	GetJobList(ctx context.Context) ([]model.Job, error)
+	CreateJob(ctx context.Context, body model.JobCreate, ownderID uint) (*model.Job, error)
+	GetJobByJobID(ctx context.Context, jobID uint) (*model.Job, error)
+	GetJobBySlug(ctx context.Context, slug string) (*model.Job, error)
+	GetJobByOwnerID(ctx context.Context, ownerID uint) ([]model.Job, error)
 }
 type jobService struct {
 	repo     repository.JobRepository
@@ -32,9 +32,9 @@ func NewJobService(repo repository.JobRepository, validate *validator.Validate) 
 	}
 }
 
-func (s *jobService) GetProjectList(ctx context.Context) ([]model.Project, error) {
+func (s *jobService) GetJobList(ctx context.Context) ([]model.Job, error) {
 	s.Log.Info("Retrieving project list")
-	projects, err := s.repo.GetProjectList(ctx)
+	projects, err := s.repo.GetJobList(ctx)
 	if err != nil {
 		s.Log.WithError(err).Error("Failed to retrieve project list")
 		return nil, err
@@ -43,13 +43,13 @@ func (s *jobService) GetProjectList(ctx context.Context) ([]model.Project, error
 	return projects, nil
 }
 
-func (s *jobService) CreateProject(ctx context.Context, body model.ProjectCreate, ownerID uint) (*model.Project, error) {
+func (s *jobService) CreateJob(ctx context.Context, body model.JobCreate, ownerID uint) (*model.Job, error) {
 	if err := s.Validate.Struct(body); err != nil {
 		s.Log.WithError(err).Error("Validation failed")
 		return nil, err
 	}
 
-	project := &model.Project{
+	project := &model.Job{
 		OwnerID:     body.OwnerID,
 		Title:       body.Title,
 		Description: body.Description,
@@ -60,7 +60,7 @@ func (s *jobService) CreateProject(ctx context.Context, body model.ProjectCreate
 		Status:      enum.DRAFT_PROJECT, // หรือ "open" ตาม business logic
 	}
 
-	if err := s.repo.CreateProject(ctx, project); err != nil {
+	if err := s.repo.CreateJob(ctx, project); err != nil {
 		s.Log.WithError(err).Error("Failed to create project")
 		return nil, err
 	}
@@ -69,28 +69,28 @@ func (s *jobService) CreateProject(ctx context.Context, body model.ProjectCreate
 
 }
 
-func (s *jobService) GetProjectByProjectID(ctx context.Context, projectID uint) (*model.Project, error) {
-	project, err := s.repo.GetProjectByProjectID(ctx, projectID)
+func (s *jobService) GetJobByJobID(ctx context.Context, jobID uint) (*model.Job, error) {
+	project, err := s.repo.GetJobByJobID(ctx, jobID)
 	if err != nil {
-		s.Log.WithError(err).Errorf("Failed to get project with project ID: %d", projectID)
+		s.Log.WithError(err).Errorf("Failed to get job with project ID: %d", jobID)
 		return nil, err
 	}
 	return project, nil
 }
 
-func (s *jobService) GetProjectBySlug(ctx context.Context, slug string) (*model.Project, error) {
-	project, err := s.repo.GetProjectBySlug(ctx, slug)
+func (s *jobService) GetJobBySlug(ctx context.Context, slug string) (*model.Job, error) {
+	project, err := s.repo.GetJobBySlug(ctx, slug)
 	if err != nil {
-		s.Log.WithError(err).Errorf("Failed to get project with project slug: %d", slug)
+		s.Log.WithError(err).Errorf("Failed to get job with job slug: %d", slug)
 		return nil, err
 	}
 	return project, nil
 }
 
-func (s *jobService) GetProjectsByOwnerID(ctx context.Context, ownerID uint) ([]model.Project, error) {
-	projects, err := s.repo.GetProjectsByOwnerID(ctx, ownerID)
+func (s *jobService) GetJobByOwnerID(ctx context.Context, ownerID uint) ([]model.Job, error) {
+	projects, err := s.repo.GetJobByOwnerID(ctx, ownerID)
 	if err != nil {
-		s.Log.WithError(err).Errorf("Failed to get projects for owner ID: %d", ownerID)
+		s.Log.WithError(err).Errorf("Failed to get jobs for owner ID: %d", ownerID)
 		return nil, err
 	}
 	return projects, nil

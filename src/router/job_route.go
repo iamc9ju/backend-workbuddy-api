@@ -8,13 +8,13 @@ import (
 )
 
 func JobRoutes(v1 fiber.Router, p service.JobService) {
-	projectController := controller.NewProjectController(p)
+	jobController := controller.NewJobController(p)
 
-	project := v1.Group("/project")
+	job := v1.Group("/job")
 
-	project.Get("list", projectController.GetProjectList)
-	project.Get(":slug", projectController.GetProjectBySlug)
-	project.Post("", projectController.CreateProject)
-	project.Get("owner/:id", projectController.GetProjectsByOwnerID)
+	job.Get("list", jobController.GetJobList)
+	job.Get(":slug", jobController.GetJobBySlug)
+	job.Post("", jobController.CreateJob)
+	job.Get("owner/:id", jobController.GetJobByOwnerID)
 
 }
