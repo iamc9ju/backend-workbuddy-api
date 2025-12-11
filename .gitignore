@@ -1,0 +1,26 @@
+# OS files
+.DS_Store
+Thumbs.db
+*.swp
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Logs and databases
+*.log
+*.sqlite
+
+# Environment variables (สำคัญมาก: ห้ามเอาไฟล์ Password/Key ขึ้น Git)
+.env
+.env.local
+.env.*.local
+
+node_modules/
+/dist
+/build
+.npm
+
+/script
